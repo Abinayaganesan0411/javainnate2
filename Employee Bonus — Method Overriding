@@ -1,0 +1,36 @@
+class Employee {
+
+    void calculateBonus() {
+        System.out.println("General employee bonus");
+    }
+}
+
+class Manager extends Employee {
+
+    @Override
+    void calculateBonus() {
+        System.out.println("Manager bonus: 20%");
+    }
+}
+
+class Developer extends Employee {
+
+    @Override
+    void calculateBonus() {
+        System.out.println("Developer bonus: 15%");
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        Employee e;
+
+        e = new Manager();
+        e.calculateBonus();
+
+        e = new Developer();
+        e.calculateBonus();
+    }
+}
