@@ -1,0 +1,31 @@
+public class Main {
+    
+    public boolean rotateString(String s, String goal) {
+        // Step 1: Check if the lengths match
+        if (s.length() != goal.length()) {
+            return false;
+        }
+        
+        // Step 2 & 3: Double the string and check if 'goal' exists as a substring
+        String doubledString = s + s;
+        return doubledString.contains(goal);
+    }
+
+    // Main method to run and verify test cases
+    public static void main(String[] args) {
+        Main solver = new Main();
+        
+        // Test Case 1
+        String s1 = "abcde";
+        String goal1 = "cdeab";
+        System.out.println("Test Case 1 - s: \"" + s1 + "\", goal: \"" + goal1 + "\"");
+        System.out.println("Expected: true  | Actual: " + solver.rotateString(s1, goal1));
+        System.out.println();
+        
+        // Test Case 2
+        String s2 = "abcde";
+        String goal2 = "abced";
+        System.out.println("Test Case 2 - s: \"" + s2 + "\", goal: \"" + goal2 + "\"");
+        System.out.println("Expected: false | Actual: " + solver.rotateString(s2, goal2));
+    }
+}
