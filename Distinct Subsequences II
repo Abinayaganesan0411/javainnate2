@@ -1,0 +1,52 @@
+import java.util.Arrays;
+
+public class Main {
+    
+    public int distinctSubseqII(String s) {
+        int MOD = 1_000_000_007;
+        int n = s.length();
+        
+        // dp[i] stores the number of distinct subsequences using prefix of length i (including empty string)
+        int[] dp = new int[n + 1];
+        dp[0] = 1; // Base case: empty string
+        
+        // Tracks the 1-based index position where each character last appeared
+        int[] lastOccurrence = new int[26];
+        Arrays.fill(lastOccurrence, -1);
+        
+        for (int i = 0; i < n; i++) {
+            int charIdx = s.charAt(i) - 'a';
+            
+            // Double the number of distinct subsequences by appending s.charAt(i)
+            dp[i + 1] = (dp[i] * 2) % MOD;
+            
+            // If the character has appeared before, remove duplicate subsequences
+            if (lastOccurrence[charIdx] != -1) {
+                int prevIdx = lastOccurrence[charIdx];
+                dp[i + 1] = (dp[i + 1] - dp[prevIdx] + MOD) % MOD;
+            }
+            
+            // Update the last seen position of the character
+            lastOccurrence[charIdx] = i;
+        }
+        
+        // Subtract 1 to remove the empty string subsequence from the count
+        return (dp[n] - 1 + MOD) % MOD;
+    }
+
+    // Main method to run and verify test cases
+    public static void main(String[] args) {
+        Main solver = new Main();
+        
+        // Test Case 1
+        String s1 = "abc";
+        System.out.println("Test Case 1 - Input: \"" + s1 + "\"");
+        System.out.println("Expected: 7 | Actual: " + solver.distinctSubseqII(s1));
+        System.out.println();
+        
+        // Test Case 2
+        String s2 = "aba";
+        System.out.println("Test Case 2 - Input: \"" + s2 + "\"");
+        System.out.println("Expected: 6 | Actual: " + solver.distinctSubseqII(s2));
+    }
+}
