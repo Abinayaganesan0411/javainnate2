@@ -1,0 +1,103 @@
+import java.util.Arrays;
+
+public class Main {
+    
+    public int maxDistance(int side, int[][] points, int k) {
+        int n = points.length;
+        long[] nums = new long[n];
+        
+        // Step 1: Map 2D coordinates on the square boundary onto a 1D perimeter line
+        for (int i = 0; i < n; i++) {
+            long x = points[i][0];
+            long y = points[i][1];
+            
+            if (x == 0) {
+                nums[i] = y;
+            } else if (y == side) {
+                nums[i] = side + x;
+            } else if (x == side) {
+                nums[i] = side * 3L - y;
+            } else {
+                nums[i] = side * 4L - x;
+            }
+        }
+        
+        // Step 2: Sort the 1D positions
+        Arrays.sort(nums);
+        
+        // Step 3: Binary search for the maximum possible minimum Manhattan distance
+        long low = 0;
+        long high = 2L * side; // Maximum possible Manhattan distance between opposite corners
+        long ans = 0;
+        
+        while (low <= high) {
+            long mid = low + (high - low) / 2;
+            if (isValid(nums, k, side, mid)) {
+                ans = mid;
+                low = mid + 1; // Try to look for a larger minimum distance
+            } else {
+                high = mid - 1; // Shrink target distance
+            }
+        }
+        
+        return (int) ans;
+    }
+    
+    // Step 4: Greedy feasibility check using binary search transitions
+    private boolean isValid(long[] nums, int k, int side, long targetDist) {
+        int n = nums.length;
+        
+        for (int i = 0; i < n; i++) {
+            long start = nums[i];
+            long endBound = start + 4L * side - targetDist;
+            long cur = start;
+            boolean possible = true;
+            int currentIdx = i;
+            
+            for (int step = 0; step < k - 1; step++) {
+                long targetPos = cur + targetDist;
+                currentIdx = findFirstGreaterOrEqual(nums, targetPos, currentIdx + 1);
+                
+                if (currentIdx == n || nums[currentIdx] > endBound) {
+                    possible = false;
+                    break;
+                }
+                cur = nums[currentIdx];
+            }
+            
+            if (possible) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    // Helper method to find the first element index greater than or equal to a target
+    private int findFirstGreaterOrEqual(long[] nums, long target, int startIdx) {
+        int low = startIdx, high = nums.length - 1;
+        int ans = nums.length;
+        
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            if (nums[mid] >= target) {
+                ans = mid;
+                high = mid - 1;
+            } else {
+                low = mid + 1;
+            }
+        }
+        return ans;
+    }
+
+    // Main method to run and verify test cases
+    public static void main(String[] args) {
+        Main solver = new Main();
+        
+        // Test Case 1
+        int side1 = 2;
+        int[][] points1 = {{0, 2}, {2, 0}, {2, 2}, {0, 0}};
+        int k1 = 4;
+        System.out.println("Expected Output: 2 | Actual Output: " + solver.maxDistance(side1, points1, k1));
+    }
+}
