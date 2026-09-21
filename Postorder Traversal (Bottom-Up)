@@ -1,0 +1,73 @@
+public class Main {
+    
+    // Definition for a binary tree node.
+    public static class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+        TreeNode() {}
+        TreeNode(int val) { this.val = val; }
+        TreeNode(int val, TreeNode left, TreeNode right) {
+            this.val = val;
+            this.left = left;
+            this.right = right;
+        }
+    }
+
+    // Helper class to return both sum and count from recursion steps
+    private static class TreeInfo {
+        int sum;
+        int count;
+
+        TreeInfo(int sum, int count) {
+            this.sum = sum;
+            this.count = count;
+        }
+    }
+
+    private int matchingNodeCount = 0;
+
+    public int averageOfSubtree(TreeNode root) {
+        matchingNodeCount = 0; // Reset counter for execution safety
+        calculateSubtreeMetrics(root);
+        return matchingNodeCount;
+    }
+
+    private TreeInfo calculateSubtreeMetrics(TreeNode node) {
+        if (node == null) {
+            return new TreeInfo(0, 0);
+        }
+
+        // Traverse down the tree using Postorder (Bottom-Up)
+        TreeInfo left = calculateSubtreeMetrics(node.left);
+        TreeInfo right = calculateSubtreeMetrics(node.right);
+
+        // Aggregate sum and count values for the current subtree
+        int totalSum = node.val + left.sum + right.sum;
+        int totalCount = 1 + left.count + right.count;
+
+        // Calculate floor average and verify condition
+        int average = totalSum / totalCount;
+        if (node.val == average) {
+            matchingNodeCount++;
+        }
+
+        return new TreeInfo(totalSum, totalCount);
+    }
+
+    // Main method to construct tree and run test verification
+    public static void main(String[] args) {
+        Main solver = new Main();
+
+        // Construct Example 1 Tree: [4, 8, 5, 0, 1, null, 6]
+        TreeNode root = new TreeNode(4);
+        root.left = new TreeNode(8);
+        root.right = new TreeNode(5);
+        root.left.left = new TreeNode(0);
+        root.left.right = new TreeNode(1);
+        root.right.right = new TreeNode(6);
+
+        int result = solver.averageOfSubtree(root);
+        System.out.println("Expected Output: 5 | Actual Output: " + result);
+    }
+}
