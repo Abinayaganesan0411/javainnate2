@@ -1,0 +1,109 @@
+import java.util.*;
+
+public class Main {
+
+    private static class Interval {
+        int start, end, weight, id;
+        
+        public Interval(int start, int end, int weight, int id) {
+            this.start = start;
+            this.end = end;
+            this.weight = weight;
+            this.id = id;
+        }
+    }
+
+    private static class State {
+        long score;
+        List<Integer> indices;
+
+        public State(long score, List<Integer> indices) {
+            this.score = score;
+            this.indices = new ArrayList<>(indices);
+        }
+    }
+
+    public int[] maximumWeight(int[][] intervalsData) {
+        int n = intervalsData.length;
+        Interval[] intervals = new Interval[n];
+        for (int i = 0; i < n; i++) {
+            intervals[i] = new Interval(intervalsData[i][0], intervalsData[i][1], intervalsData[i][2], i);
+        }
+
+        // Sort intervals by start time. Tie-break by end time.
+        Arrays.sort(intervals, (a, b) -> {
+            if (a.start != b.start) return Integer.compare(a.start, b.start);
+            return Integer.compare(a.end, b.end);
+        });
+
+        int[] nextIndex = new int[n];
+        for (int i = 0; i < n; i++) {
+            int target = intervals[i].end;
+            int low = i + 1, high = n, ans = n;
+            while (low < high) {
+                int mid = low + (high - low) / 2;
+                if (intervals[mid].start > target) {
+                    ans = mid;
+                    high = mid;
+                } else {
+                    low = mid + 1;
+                }
+            }
+            nextIndex[i] = ans;
+        }
+
+        State[][] dp = new State[n + 1][5];
+        for (int j = 0; j <= 4; j++) {
+            dp[n][j] = new State(0, new ArrayList<>());
+        }
+
+        for (int i = n - 1; i >= 0; i--) {
+            dp[i][0] = new State(0, new ArrayList<>());
+            for (int j = 1; j <= 4; j++) {
+                // Option 1: Skip the current interval
+                State skipState = dp[i + 1][j];
+              
+                int nextChoice = nextIndex[i];
+                State takeNext = dp[nextChoice][j - 1];
+                long takeScore = intervals[i].weight + takeNext.score;
+                
+                List<Integer> takeIndices = new ArrayList<>();
+                takeIndices.add(intervals[i].id);
+                takeIndices.addAll(takeNext.indices);
+                Collections.sort(takeIndices);
+                State takeState = new State(takeScore, takeIndices);
+
+                if (takeState.score > skipState.score) {
+                    dp[i][j] = takeState;
+                } else if (skipState.score > takeState.score) {
+                    dp[i][j] = skipState;
+                } else {
+                    dp[i][j] = compareIndices(takeState.indices, skipState.indices) <= 0 ? takeState : skipState;
+                }
+            }
+        }
+
+        List<Integer> resultList = dp[0][4].indices;
+        int[] result = new int[resultList.size()];
+        for (int i = 0; i < resultList.size(); i++) {
+            result[i] = resultList.get(i);
+        }
+        return result;
+    }
+
+    private int compareIndices(List<Integer> a, List<Integer> b) {
+        int len = Math.min(a.size(), b.size());
+        for (int i = 0; i < len; i++) {
+            int cmp = Integer.compare(a.get(i), b.get(i));
+            if (cmp != 0) return cmp;
+        }
+        return Integer.compare(a.size(), b.size());
+    }
+
+    public static void main(String[] args) {
+        Main solver = new Main();
+        int[][] intervals = {{1, 3, 2}, {4, 5, 2}, {1, 5, 5}, {6, 9, 3}, {5, 7, 11}, {8, 9, 1}};
+        int[] result = solver.maximumWeight(intervals);
+        System.out.println("Selected Best Interval Indices: " + Arrays.toString(result));
+    }
+}
