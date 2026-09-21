@@ -1,0 +1,53 @@
+import java.util.Arrays;
+
+public class Main {
+    
+    public int findUniqueEvenNumbers(int[] digits) {
+        
+        int[] availableCounts = new int[10];
+        for (int digit : digits) {
+            availableCounts[digit]++;
+        }
+        
+        int distinctCount = 0;
+        
+      
+        for (int num = 100; num <= 998; num += 2) {
+            int hundreds = num / 100;
+            int tens = (num / 10) % 10;
+            int units = num % 10;
+         
+            int[] requiredCounts = new int[10];
+            requiredCounts[hundreds]++;
+            requiredCounts[tens]++;
+            requiredCounts[units]++;
+         
+            boolean isValid = true;
+            for (int d = 0; d < 10; d++) {
+                if (requiredCounts[d] > availableCounts[d]) {
+                    isValid = false;
+                    break;
+                }
+            }
+            
+            if (isValid) {
+                distinctCount++;
+            }
+        }
+        
+        return distinctCount;
+    }
+
+    public static void main(String[] args) {
+        Main solver = new Main();
+      
+        int[] digits1 = {1, 2, 3, 4};
+        System.out.println("Test Case 1 Input: " + Arrays.toString(digits1));
+        System.out.println("Expected Output: 12 | Actual Output: " + solver.findUniqueEvenNumbers(digits1));
+        System.out.println();
+        
+        int[] digits2 = {0, 2, 2};
+        System.out.println("Test Case 2 Input: " + Arrays.toString(digits2));
+        System.out.println("Expected Output: 2  | Actual Output: " + solver.findUniqueEvenNumbers(digits2));
+    }
+}
