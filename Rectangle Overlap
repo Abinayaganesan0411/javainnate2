@@ -1,0 +1,27 @@
+import java.util.Arrays;
+
+public class Main {
+    
+    public boolean isRectangleOverlap(int[] rec1, int[] rec2) {
+    
+        boolean hasHorizontalOverlap = Math.max(rec1[0], rec2[0]) < Math.min(rec1[2], rec2[2]);
+        boolean hasVerticalOverlap   = Math.max(rec1[1], rec2[1]) < Math.min(rec1[3], rec2[3]);
+        
+        return hasHorizontalOverlap && hasVerticalOverlap;
+    }
+
+    public static void main(String[] args) {
+        Main solver = new Main();
+
+        int[] rec1_ex1 = {0, 0, 2, 2};
+        int[] rec2_ex1 = {1, 1, 3, 3};
+        System.out.println("Test Case 1 - rec1: " + Arrays.toString(rec1_ex1) + ", rec2: " + Arrays.toString(rec2_ex1));
+        System.out.println("Expected: true  | Actual: " + solver.isRectangleOverlap(rec1_ex1, rec2_ex1));
+        System.out.println();
+
+        int[] rec1_ex2 = {0, 0, 1, 1};
+        int[] rec2_ex2 = {1, 0, 2, 1};
+        System.out.println("Test Case 2 - rec1: " + Arrays.toString(rec1_ex2) + ", rec2: " + Arrays.toString(rec2_ex2));
+        System.out.println("Expected: false | Actual: " + solver.isRectangleOverlap(rec1_ex2, rec2_ex2));
+    }
+}
