@@ -1,0 +1,24 @@
+class Solution {
+    public int[] resultArray(int[] nums, int k) {
+        int[] totalCounts = new int[k];
+        int[] dp = new int[k];
+        
+        for (int num : nums) {
+            int[] nextDp = new int[k];
+            int currentMod = num % k;
+            nextDp[currentMod] = 1;
+            for (int r = 0; r < k; r++) {
+                if (dp[r] > 0) {
+                    int nextMod = (r * currentMod) % k;
+                    nextDp[nextMod] += dp[r];
+                }
+            }
+            for (int r = 0; r < k; r++) {
+                totalCounts[r] += nextDp[r];
+            }
+            dp = nextDp;
+        }
+        
+        return totalCounts;
+    }
+}
